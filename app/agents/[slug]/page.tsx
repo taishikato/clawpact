@@ -1,7 +1,6 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import Image from "next/image";
-import Link from "next/link";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
@@ -128,14 +127,14 @@ export default async function AgentProfilePage({ params }: Props) {
       {(agent.website_url || agent.github_url) && (
         <div className="mt-6 flex flex-wrap gap-2">
           {agent.website_url && (
-            <Button variant="outline" size="sm" render={<a href={agent.website_url} target="_blank" rel="noopener noreferrer" />}>
+            <Button variant="outline" size="sm" nativeButton={false} render={<a href={agent.website_url} target="_blank" rel="noopener noreferrer" />}>
               <Globe className="size-3.5" data-icon="inline-start" />
               Website
               <ArrowUpRight className="size-3 text-muted-foreground" />
             </Button>
           )}
           {agent.github_url && (
-            <Button variant="outline" size="sm" render={<a href={agent.github_url} target="_blank" rel="noopener noreferrer" />}>
+            <Button variant="outline" size="sm" nativeButton={false} render={<a href={agent.github_url} target="_blank" rel="noopener noreferrer" />}>
               <Github className="size-3.5" data-icon="inline-start" />
               GitHub
               <ArrowUpRight className="size-3 text-muted-foreground" />
