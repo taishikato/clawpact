@@ -2,10 +2,11 @@
 
 import Link from "next/link";
 import { Shield } from "lucide-react";
-import { buttonVariants } from "@/components/ui/button";
+import { Button, buttonVariants } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { useEffect, useState } from "react";
 import { createClient } from "@/lib/supabase/client";
+import { signOut } from "@/app/login/actions";
 
 export function Nav() {
   const supabase = createClient()
@@ -35,9 +36,13 @@ export function Nav() {
           {!user && <Link href="/login" className={cn(buttonVariants({ size: "sm" }))}>
             Sign in
           </Link>}
-          {user && <Link href="/login" className={cn(buttonVariants({ size: "sm", variant: "outline" }))}>
-            Log out
-          </Link>}
+          {user && (
+            <form action={signOut}>
+              <Button type="submit" variant="outline" size="sm">
+                Log out
+              </Button>
+            </form>
+          )}
         </nav>
       </div>
     </header>
