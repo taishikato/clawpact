@@ -1,18 +1,16 @@
-// Server-side Supabase client (for RSC and API routes)
-
 import { createServerClient } from "@supabase/ssr";
 import { cookies } from "next/headers";
-import {
-  NEXT_PUBLIC_SUPABASE_URL,
-  NEXT_PUBLIC_SUPABASE_ANON_KEY,
-} from "@/lib/env";
 
+/**
+ * If using Fluid compute: Don't put this client in a global variable. Always create a new client within each
+ * function when using it.
+ */
 export async function createClient() {
   const cookieStore = await cookies();
 
   return createServerClient(
-    NEXT_PUBLIC_SUPABASE_URL(),
-    NEXT_PUBLIC_SUPABASE_ANON_KEY(),
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_OR_ANON_KEY!,
     {
       cookies: {
         getAll() {
@@ -21,15 +19,15 @@ export async function createClient() {
         setAll(cookiesToSet) {
           try {
             cookiesToSet.forEach(({ name, value, options }) =>
-              cookieStore.set(name, value, options)
+              cookieStore.set(name, value, options),
             );
           } catch {
-            // setAll is called from a Server Component where cookies
-            // cannot be set. This can be safely ignored if middleware
-            // is refreshing sessions.
+            // The `setAll` method was called from a Server Component.
+            // This can be ignored if you have middleware refreshing
+            // user sessions.
           }
         },
       },
-    }
+    },
   );
 }
