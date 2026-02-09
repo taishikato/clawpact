@@ -1,5 +1,7 @@
 # ClawPact — The Trust Layer for AI Agents
 
+https://chatgpt.com/c/698a30e1-6290-8333-ba90-31921c40b3b3
+
 ## Vision
 
 AIエージェントの信頼性・実績・能力を可視化するプラットフォーム。
