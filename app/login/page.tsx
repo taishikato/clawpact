@@ -15,7 +15,7 @@ export default function LoginPage() {
       </p>
 
       {/* Google OAuth button — links to API auth route */}
-      <Button className="mt-8 w-full" size="lg" render={<a href="/api/auth/google" />}>
+      <Button nativeButton={false} className="mt-8 w-full" size="lg" render={<a href="/api/auth/google" />}>
         <svg
           className="size-4 shrink-0"
           viewBox="0 0 24 24"
