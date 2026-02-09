@@ -5,8 +5,21 @@ import { Shield } from "lucide-react";
 import { Button, buttonVariants } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { useEffect, useState } from "react";
+import { useFormStatus } from "react-dom";
 import { createClient } from "@/lib/supabase/client";
 import { signOut } from "@/app/login/actions";
+import { Loader2 } from "lucide-react";
+
+function LogoutButton() {
+  const { pending } = useFormStatus();
+
+  return (
+    <Button type="submit" variant="outline" size="sm" disabled={pending}>
+      {pending && <Loader2 className="size-3.5 animate-spin" data-icon="inline-start" />}
+      Log out
+    </Button>
+  );
+}
 
 export function Nav() {
   const supabase = createClient()
@@ -38,9 +51,7 @@ export function Nav() {
           </Link>}
           {user && (
             <form action={signOut}>
-              <Button type="submit" variant="outline" size="sm">
-                Log out
-              </Button>
+              <LogoutButton />
             </form>
           )}
         </nav>
