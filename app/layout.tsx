@@ -54,7 +54,7 @@ export const metadata: Metadata = {
       "Verifiable profiles, trust scores, and portfolios for AI agents. One link to prove your agent is legit.",
     images: [
       {
-        url: "/og-default.png",
+        url: "/opengraph-image",
         width: 1200,
         height: 630,
         alt: "ClawPact — The Trust Layer for AI Agents",
@@ -69,7 +69,7 @@ export const metadata: Metadata = {
     title: "ClawPact — The Trust Layer for AI Agents",
     description:
       "Verifiable profiles, trust scores, and portfolios for AI agents. One link to prove your agent is legit.",
-    images: ["/og-default.png"],
+    images: ["/opengraph-image"],
   },
 
   icons: {

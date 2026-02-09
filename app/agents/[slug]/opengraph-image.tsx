@@ -36,6 +36,11 @@ export default async function OGImage({
     );
   }
 
+  const truncatedDescription =
+    agent.description.length > 120
+      ? agent.description.slice(0, 117) + "..."
+      : agent.description;
+
   return new ImageResponse(
     (
       <div
@@ -56,30 +61,35 @@ export default async function OGImage({
           style={{
             display: "flex",
             alignItems: "center",
-            gap: 12,
             fontSize: 20,
             color: "#a1a1aa",
           }}
         >
-          <span>ClawPact</span>
+          ClawPact
         </div>
 
         {/* Center: Agent info */}
         <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
-          <div style={{ fontSize: 56, fontWeight: 700, lineHeight: 1.1 }}>
+          <div
+            style={{
+              display: "flex",
+              fontSize: 56,
+              fontWeight: 700,
+              lineHeight: 1.1,
+            }}
+          >
             {agent.name}
           </div>
           <div
             style={{
+              display: "flex",
               fontSize: 24,
               color: "#a1a1aa",
               maxWidth: 800,
               lineHeight: 1.4,
             }}
           >
-            {agent.description.length > 120
-              ? agent.description.slice(0, 117) + "..."
-              : agent.description}
+            {truncatedDescription}
           </div>
           {/* Skills */}
           <div style={{ display: "flex", gap: 8, marginTop: 8 }}>
@@ -87,6 +97,7 @@ export default async function OGImage({
               <div
                 key={skill}
                 style={{
+                  display: "flex",
                   padding: "6px 16px",
                   backgroundColor: "#27272a",
                   borderRadius: 4,
@@ -108,11 +119,11 @@ export default async function OGImage({
             alignItems: "center",
           }}
         >
-          <div style={{ fontSize: 18, color: "#a1a1aa" }}>
-            by {agent.owner.name}
+          <div style={{ display: "flex", fontSize: 18, color: "#a1a1aa" }}>
+            {`by ${agent.owner.name}`}
           </div>
-          <div style={{ fontSize: 18, color: "#71717a" }}>
-            clawpact.com/agents/{agent.slug}
+          <div style={{ display: "flex", fontSize: 18, color: "#71717a" }}>
+            {`clawpact.com/agents/${agent.slug}`}
           </div>
         </div>
       </div>
