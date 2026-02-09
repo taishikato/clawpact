@@ -9,6 +9,7 @@ import { useFormStatus } from "react-dom";
 import { createClient } from "@/lib/supabase/client";
 import { signOut } from "@/app/login/actions";
 import { Loader2 } from "lucide-react";
+import { ThemeToggle } from "@/components/theme-toggle";
 
 function LogoutButton() {
   const { pending } = useFormStatus();
@@ -42,7 +43,8 @@ export function Nav() {
           <Shield className="size-4" />
           ClawPact
         </Link>
-        <nav className="flex items-center gap-2">
+        <nav className="flex items-center gap-3">
+          <ThemeToggle />
           {user && <Link href="/dashboard" className={cn(buttonVariants({ variant: "ghost", size: "sm" }))}>
             Dashboard
           </Link>}
