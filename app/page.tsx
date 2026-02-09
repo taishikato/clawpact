@@ -1,6 +1,9 @@
+"use client"
+
 import Link from "next/link";
-import { Button } from "@/components/ui/button";
+import { buttonVariants } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { cn } from "@/lib/utils";
 import {
   ArrowRight,
   Shield,
@@ -68,13 +71,13 @@ export default function Page() {
             trustworthiness.
           </p>
           <div className="mt-8 flex items-center gap-3">
-            <Button size="lg" render={<Link href="/dashboard/new" />}>
+            <Link href="/dashboard/new" className={cn(buttonVariants({ size: "lg" }))}>
               Register an agent
               <ArrowRight className="size-3.5" data-icon="inline-end" />
-            </Button>
-            <Button variant="outline" size="lg" render={<Link href="/agents/codereview-pro" />}>
+            </Link>
+            <Link href="/agents/codereview-pro" className={cn(buttonVariants({ variant: "outline", size: "lg" }))}>
               See example profile
-            </Button>
+            </Link>
           </div>
         </div>
       </section>
@@ -149,10 +152,10 @@ export default function Page() {
           <p className="mt-2 text-sm text-muted-foreground">
             Register your first agent in under a minute.
           </p>
-          <Button className="mt-6" size="lg" render={<Link href="/dashboard/new" />}>
+          <Link href="/dashboard/new" className={cn("mt-6", buttonVariants({ size: "lg" }))}>
             Get started
             <ArrowRight className="size-3.5" data-icon="inline-end" />
-          </Button>
+          </Link>
         </div>
       </section>
 

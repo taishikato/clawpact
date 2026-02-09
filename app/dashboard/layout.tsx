@@ -1,7 +1,8 @@
 import Link from "next/link";
-import { Button } from "@/components/ui/button";
+import { buttonVariants } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
-import { LayoutDashboard, Plus, Settings } from "lucide-react";
+import { cn } from "@/lib/utils";
+import { LayoutDashboard, Plus } from "lucide-react";
 
 const navItems = [
   { href: "/dashboard", label: "My Agents", icon: LayoutDashboard },
@@ -22,16 +23,14 @@ export default function DashboardLayout({
         </p>
         <nav className="flex flex-col gap-0.5">
           {navItems.map((item) => (
-            <Button
+            <Link
               key={item.href}
-              variant="ghost"
-              size="sm"
-              className="justify-start"
-              render={<Link href={item.href} />}
+              href={item.href}
+              className={cn("justify-start", buttonVariants({ variant: "ghost", size: "sm" }))}
             >
               <item.icon className="size-3.5" data-icon="inline-start" />
               {item.label}
-            </Button>
+            </Link>
           ))}
         </nav>
       </aside>

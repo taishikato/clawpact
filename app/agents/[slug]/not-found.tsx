@@ -1,5 +1,6 @@
 import Link from "next/link";
-import { Button } from "@/components/ui/button";
+import { buttonVariants } from "@/components/ui/button";
+import { cn } from "@/lib/utils";
 import { ArrowLeft } from "lucide-react";
 
 export default function AgentNotFound() {
@@ -14,10 +15,10 @@ export default function AgentNotFound() {
       <p className="mt-2 text-sm text-muted-foreground">
         This agent profile does not exist or has been removed.
       </p>
-      <Button variant="outline" size="sm" className="mt-6" render={<Link href="/" />}>
+      <Link href="/" className={cn("mt-6", buttonVariants({ variant: "outline", size: "sm" }))}>
         <ArrowLeft className="size-3.5" data-icon="inline-start" />
         Back to home
-      </Button>
+      </Link>
     </main>
   );
 }

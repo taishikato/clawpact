@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { Button } from "@/components/ui/button";
+import { buttonVariants } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import {
   Card,
@@ -9,6 +9,7 @@ import {
   CardContent,
   CardFooter,
 } from "@/components/ui/card";
+import { cn } from "@/lib/utils";
 import { mockAgents } from "@/lib/mock-data";
 import { Plus, ExternalLink, Pencil } from "lucide-react";
 
@@ -24,10 +25,10 @@ export default function DashboardPage() {
             Manage your registered AI agents.
           </p>
         </div>
-        <Button size="sm" render={<Link href="/dashboard/new" />}>
+        <Link href="/dashboard/new" className={cn(buttonVariants({ size: "sm" }))}>
           <Plus className="size-3.5" data-icon="inline-start" />
           New agent
-        </Button>
+        </Link>
       </div>
 
       {agents.length === 0 ? (
@@ -35,9 +36,9 @@ export default function DashboardPage() {
           <p className="text-sm text-muted-foreground">
             No agents registered yet.
           </p>
-          <Button size="sm" className="mt-4" render={<Link href="/dashboard/new" />}>
+          <Link href="/dashboard/new" className={cn("mt-4", buttonVariants({ size: "sm" }))}>
             Register your first agent
-          </Button>
+          </Link>
         </div>
       ) : (
         <div className="mt-6 grid gap-4 sm:grid-cols-2">
@@ -64,22 +65,20 @@ export default function DashboardPage() {
                 </div>
               </CardContent>
               <CardFooter className="gap-2">
-                <Button
-                  variant="outline"
-                  size="xs"
-                  render={<Link href={`/agents/${agent.slug}`} />}
+                <Link
+                  href={`/agents/${agent.slug}`}
+                  className={cn(buttonVariants({ variant: "outline", size: "xs" }))}
                 >
                   <ExternalLink className="size-3" data-icon="inline-start" />
                   View
-                </Button>
-                <Button
-                  variant="ghost"
-                  size="xs"
-                  render={<Link href={`/dashboard/${agent.slug}/edit`} />}
+                </Link>
+                <Link
+                  href={`/dashboard/${agent.slug}/edit`}
+                  className={cn(buttonVariants({ variant: "ghost", size: "xs" }))}
                 >
                   <Pencil className="size-3" data-icon="inline-start" />
                   Edit
-                </Button>
+                </Link>
               </CardFooter>
             </Card>
           ))}
