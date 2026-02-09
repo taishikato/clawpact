@@ -1,6 +1,9 @@
+"use client"
+
 import Link from "next/link";
-import { Button } from "@/components/ui/button";
 import { Shield } from "lucide-react";
+import { buttonVariants } from "@/components/ui/button";
+import { cn } from "@/lib/utils";
 
 export function Nav() {
   return (
@@ -11,12 +14,12 @@ export function Nav() {
           ClawPact
         </Link>
         <nav className="flex items-center gap-2">
-          <Button variant="ghost" size="sm" render={<Link href="/dashboard" />}>
+          <Link href="/dashboard" className={cn(buttonVariants({ variant: "ghost", size: "sm" }))}>
             Dashboard
-          </Button>
-          <Button size="sm" render={<Link href="/login" />}>
+          </Link>
+          <Link href="/login" className={cn(buttonVariants({ size: "sm" }))}>
             Sign in
-          </Button>
+          </Link>
         </nav>
       </div>
     </header>
