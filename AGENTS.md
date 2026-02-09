@@ -3,10 +3,17 @@
 ## Project Structure & Module Organization
 - `app/` holds Next.js App Router routes, layouts, and API handlers (`app/api/*`).
 - `app/agents/[slug]` serves public agent profile pages; `app/dashboard` and `app/login` are authenticated flows.
+- OAuth callback handlers live in `app/auth/callback/route.ts` and `app/api/auth/callback/route.ts`.
 - `components/` contains app-level UI; `components/ui/` contains reusable shadcn/ui primitives.
 - `lib/` contains shared logic (`auth.ts`, `validations.ts`, `types.ts`, `supabase/*`).
+- `proxy.ts` wires Supabase session refresh middleware for request-time auth state.
 - `__tests__/` mirrors runtime areas (`api`, `components`, `lib`, `helpers`).
-- `supabase/migrations/` stores SQL schema/RLS migrations; `DOCS/` stores product and SEO docs.
+- `supabase/migrations/` stores SQL schema/RLS migrations; `DOCS/` stores product and SEO docs (including `DOCS/ROADMAP.md`).
+
+## Product Scope (Current Phase)
+- Current target is **Phase 1 (MVP)** from `DOCS/ROADMAP.md`: shareable agent profiles, Google OAuth owner auth, registration APIs, and public profile pages.
+- Prioritize shipping and hardening Phase 1 flows before adding Phase 2+ ideas (reviews, paid tiers, trust-score benchmarks, enterprise APIs), unless explicitly requested.
+- Keep API and UI changes aligned with Phase 1 success metrics: fast registration, accurate profile display, and stable shareable URLs.
 
 ## Build, Test, and Development Commands
 Use `pnpm` for all workflows.
@@ -38,5 +45,5 @@ Use `pnpm` for all workflows.
 
 ## Security & Configuration Tips
 - Keep secrets in local environment files only; do not commit credentials.
-- Required environment variables: `NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_ANON_KEY`, `SUPABASE_SERVICE_ROLE_KEY`.
+- Required environment variables: `NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_OR_ANON_KEY`, `SUPABASE_SERVICE_ROLE_KEY`.
 - When editing `supabase/migrations/*`, preserve or improve RLS policies for `owners` and `agents`.
