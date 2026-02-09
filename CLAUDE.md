@@ -35,18 +35,24 @@ Package manager is **pnpm** (not npm/yarn).
 ```
 app/                        # Next.js App Router — server components by default
   api/agents/               # REST API: POST (create), GET/PUT/DELETE via [slug]
-  api/auth/callback/        # Google OAuth callback
+  auth/callback/            # Google OAuth callback (exchanges code for session)
   agents/[slug]/            # Public agent profile page (shareable URL)
     opengraph-image.tsx     # Dynamic per-agent OG image generation
   dashboard/                # Owner dashboard (list agents, register new)
+    layout.tsx              # Dashboard layout with sidebar
+    new/                    # Register new agent page
   login/                    # Google OAuth login page
+    actions.ts              # Server actions: googleLogin(), signOut()
   robots.ts                 # Crawl directives (blocks /api, /dashboard, /login)
   sitemap.ts                # Dynamic sitemap (landing + all agent pages)
   manifest.ts               # PWA web app manifest
 components/ui/              # shadcn/ui components (Base UI + Tailwind + CVA)
-components/                 # App-level composed components (nav.tsx, etc.)
+components/                 # App-level composed components
+  nav.tsx                   # Global nav bar (client component, handles auth state)
   landing-page-content.tsx  # Client component for landing page
   dashboard-sidebar.tsx     # Client component for dashboard sidebar
+  login-form.tsx            # Login form component
+  google-button.tsx         # Google OAuth button component
 lib/
   types.ts                  # All TypeScript interfaces (Agent, Owner, API types)
   validations.ts            # Zod schemas + generateSlug()
@@ -68,7 +74,7 @@ __tests__/                  # Vitest tests (mirrors source structure)
 
 ### Key Patterns
 
-- **Auth flow:** Google OAuth via Supabase → callback upserts owner in `owners` table → session cookie
+- **Auth flow:** Google OAuth via Supabase → `auth/callback` exchanges code for session → upserts owner in `owners` table → redirects to dashboard. Login/logout use server actions in `app/login/actions.ts`.
 - **Agent slugs:** Auto-generated from agent name via `generateSlug()` in `lib/validations.ts`
 - **API routes:** All use Zod validation, return `ApiResponse<T>` or `ApiError` types
 - **RLS:** Agents are publicly readable; only authenticated owner can create/update/delete their own agents
