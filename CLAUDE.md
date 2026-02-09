@@ -47,6 +47,7 @@ app/                        # Next.js App Router — server components by defaul
   sitemap.ts                # Dynamic sitemap (landing + all agent pages)
   manifest.ts               # PWA web app manifest
 components/ui/              # shadcn/ui components (Base UI + Tailwind + CVA)
+  button-variants.ts        # CVA buttonVariants export for server components
 components/                 # App-level composed components
   nav.tsx                   # Global nav bar (client component, handles auth state)
   landing-page-content.tsx  # Client component for landing page
@@ -54,11 +55,10 @@ components/                 # App-level composed components
   login-form.tsx            # Login form component
   google-button.tsx         # Google OAuth button component
 lib/
-  types.ts                  # All TypeScript interfaces (Agent, Owner, API types)
+  types.ts                  # All TypeScript interfaces (User, Agent, AgentWithOwners, API types)
   validations.ts            # Zod schemas + generateSlug()
   auth.ts                   # Server-side auth helpers (getSession, getUser, requireAuth)
   env.ts                    # Runtime env var validation
-  mock-data.ts              # Mock data for development
   supabase/client.ts        # Browser Supabase client
   supabase/server.ts        # Server Supabase client (RSC/API routes)
   supabase/middleware.ts     # Session refresh helper
@@ -74,11 +74,12 @@ __tests__/                  # Vitest tests (mirrors source structure)
 
 ### Key Patterns
 
-- **Auth flow:** Google OAuth via Supabase → `auth/callback` exchanges code for session → upserts owner in `owners` table → redirects to dashboard. Login/logout use server actions in `app/login/actions.ts`.
+- **Auth flow:** Google OAuth via Supabase → `auth/callback` exchanges code for session → DB trigger auto-creates user record → redirects to dashboard. Login/logout use server actions in `app/login/actions.ts`.
+- **Agent ownership:** `agents.owner_ids` is a `uuid[]` array supporting multiple owners. Queries use `.contains("owner_ids", [userId])` for filtering, `auth.uid() = ANY(owner_ids)` in RLS policies, and GIN index for performance.
 - **Agent slugs:** Auto-generated from agent name via `generateSlug()` in `lib/validations.ts`
 - **API routes:** All use Zod validation, return `ApiResponse<T>` or `ApiError` types
-- **RLS:** Agents are publicly readable; only authenticated owner can create/update/delete their own agents
-- **Mock data:** `lib/mock-data.ts` provides `getMockAgent(slug)` and `getMockAgents()` for development without Supabase
+- **RLS:** Agents are publicly readable; only authenticated owners can create/update/delete their own agents
+- **Data fetching:** Profile pages use a two-step fetch (agent query + separate users query by `owner_ids`) since PostgREST cannot join on array foreign keys.
 - **SEO metadata:** Root layout defines `metadataBase`, title template (`%s | ClawPact`), OG/Twitter defaults. Agent pages use `generateMetadata()` with JSON-LD structured data. Private pages (dashboard, login) are `noindex`. See `DOCS/SEO_STRATEGY.md` for full strategy.
 - **Server/client split:** Pages that need metadata export must be server components. Interactive content is extracted into client components (e.g., `components/landing-page-content.tsx`).
 
