@@ -32,9 +32,12 @@ export function Nav() {
           {user && <Link href="/dashboard" className={cn(buttonVariants({ variant: "ghost", size: "sm" }))}>
             Dashboard
           </Link>}
-          <Link href="/login" className={cn(buttonVariants({ size: "sm" }))}>
+          {!user && <Link href="/login" className={cn(buttonVariants({ size: "sm" }))}>
             Sign in
-          </Link>
+          </Link>}
+          {user && <Link href="/login" className={cn(buttonVariants({ size: "sm", variant: "outline" }))}>
+            Log out
+          </Link>}
         </nav>
       </div>
     </header>
