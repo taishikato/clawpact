@@ -50,7 +50,7 @@ export async function POST(
     const { data: agent, error } = await supabase
       .from("agents")
       .insert({
-        owner_id: user.id,
+        owner_ids: [user.id],
         slug,
         name,
         description,

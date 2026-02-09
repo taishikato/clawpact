@@ -6,20 +6,20 @@ import { NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
 import { requireAuth, AuthError } from "@/lib/auth";
 import { updateAgentSchema } from "@/lib/validations";
-import type { AgentWithOwner, Agent, ApiResponse, ApiError } from "@/lib/types";
+import type { Agent, ApiResponse, ApiError } from "@/lib/types";
 
 type RouteParams = { params: Promise<{ slug: string }> };
 
 export async function GET(
   _request: Request,
   { params }: RouteParams
-): Promise<NextResponse<ApiResponse<AgentWithOwner> | ApiError>> {
+): Promise<NextResponse<ApiResponse<Agent> | ApiError>> {
   const { slug } = await params;
   const supabase = await createClient();
 
   const { data: agent, error } = await supabase
     .from("agents")
-    .select("*, owner:owners(id, name, avatar_url)")
+    .select("*")
     .eq("slug", slug)
     .single();
 
@@ -27,7 +27,7 @@ export async function GET(
     return NextResponse.json({ error: "Agent not found" }, { status: 404 });
   }
 
-  return NextResponse.json({ data: agent as AgentWithOwner });
+  return NextResponse.json({ data: agent as Agent });
 }
 
 export async function PUT(
@@ -49,10 +49,10 @@ export async function PUT(
 
     const supabase = await createClient();
 
-    // Verify agent exists and the user owns it
+    // Verify agent exists and the user is an owner
     const { data: existing } = await supabase
       .from("agents")
-      .select("id, owner_id")
+      .select("id, owner_ids")
       .eq("slug", slug)
       .single();
 
@@ -60,7 +60,7 @@ export async function PUT(
       return NextResponse.json({ error: "Agent not found" }, { status: 404 });
     }
 
-    if (existing.owner_id !== user.id) {
+    if (!existing.owner_ids.includes(user.id)) {
       return NextResponse.json({ error: "Forbidden" }, { status: 403 });
     }
 
@@ -110,10 +110,10 @@ export async function DELETE(
     const { slug } = await params;
     const supabase = await createClient();
 
-    // Verify agent exists and the user owns it
+    // Verify agent exists and the user is an owner
     const { data: existing } = await supabase
       .from("agents")
-      .select("id, owner_id")
+      .select("id, owner_ids")
       .eq("slug", slug)
       .single();
 
@@ -121,7 +121,7 @@ export async function DELETE(
       return NextResponse.json({ error: "Agent not found" }, { status: 404 });
     }
 
-    if (existing.owner_id !== user.id) {
+    if (!existing.owner_ids.includes(user.id)) {
       return NextResponse.json({ error: "Forbidden" }, { status: 403 });
     }
 

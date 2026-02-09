@@ -1,8 +1,8 @@
 import { describe, it, expect, beforeEach } from "vitest";
 import {
-  createMockOwner,
+  createMockUser,
   createMockAgent,
-  createMockAgentWithOwner,
+  createMockAgentWithOwners,
   createMockCreateAgentRequest,
   createMockUpdateAgentRequest,
   resetIdCounter,
@@ -13,18 +13,18 @@ describe("Test factories", () => {
     resetIdCounter();
   });
 
-  describe("createMockOwner", () => {
-    it("should create an owner with default values", () => {
-      const owner = createMockOwner();
-      expect(owner.id).toBeDefined();
-      expect(owner.email).toContain("@example.com");
-      expect(owner.name).toContain("Test User");
+  describe("createMockUser", () => {
+    it("should create a user with default values", () => {
+      const user = createMockUser();
+      expect(user.id).toBeDefined();
+      expect(user.email).toContain("@example.com");
+      expect(user.name).toContain("Test User");
     });
 
     it("should allow overriding fields", () => {
-      const owner = createMockOwner({ name: "Custom Name", email: "custom@test.com" });
-      expect(owner.name).toBe("Custom Name");
-      expect(owner.email).toBe("custom@test.com");
+      const user = createMockUser({ name: "Custom Name", email: "custom@test.com" });
+      expect(user.name).toBe("Custom Name");
+      expect(user.email).toBe("custom@test.com");
     });
   });
 
@@ -34,6 +34,7 @@ describe("Test factories", () => {
       expect(agent.id).toBeDefined();
       expect(agent.slug).toContain("test-agent");
       expect(agent.skills).toEqual(["testing"]);
+      expect(agent.owner_ids).toHaveLength(1);
     });
 
     it("should allow overriding fields", () => {
@@ -43,20 +44,20 @@ describe("Test factories", () => {
     });
   });
 
-  describe("createMockAgentWithOwner", () => {
+  describe("createMockAgentWithOwners", () => {
     it("should create an agent with embedded owner data", () => {
-      const agentWithOwner = createMockAgentWithOwner();
-      expect(agentWithOwner.owner).toBeDefined();
-      expect(agentWithOwner.owner.name).toBe("Test Owner");
+      const agentWithOwners = createMockAgentWithOwners();
+      expect(agentWithOwners.owners).toBeDefined();
+      expect(agentWithOwners.owners[0].name).toBe("Test Owner");
     });
 
     it("should allow overriding both agent and owner fields", () => {
-      const agentWithOwner = createMockAgentWithOwner(
+      const agentWithOwners = createMockAgentWithOwners(
         { name: "Special Agent" },
         { name: "Special Owner" }
       );
-      expect(agentWithOwner.name).toBe("Special Agent");
-      expect(agentWithOwner.owner.name).toBe("Special Owner");
+      expect(agentWithOwners.name).toBe("Special Agent");
+      expect(agentWithOwners.owners[0].name).toBe("Special Owner");
     });
   });
 

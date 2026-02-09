@@ -1,7 +1,6 @@
-"use client"
-
 import Link from "next/link";
-import { buttonVariants } from "@/components/ui/button";
+import { redirect } from "next/navigation";
+import { buttonVariants } from "@/components/ui/button-variants";
 import { Badge } from "@/components/ui/badge";
 import {
   Card,
@@ -12,11 +11,23 @@ import {
   CardFooter,
 } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
-import { mockAgents } from "@/lib/mock-data";
+import { createClient } from "@/lib/supabase/server";
+import { getUser } from "@/lib/auth";
+import type { Agent } from "@/lib/types";
 import { Plus, ExternalLink, Pencil } from "lucide-react";
 
-export default function DashboardPage() {
-  const agents = mockAgents;
+export default async function DashboardPage() {
+  const user = await getUser();
+  if (!user) redirect("/login");
+
+  const supabase = await createClient();
+  const { data } = await supabase
+    .from("agents")
+    .select("*")
+    .contains("owner_ids", [user.id])
+    .order("created_at", { ascending: false });
+
+  const agents: Agent[] = data ?? [];
 
   return (
     <div>

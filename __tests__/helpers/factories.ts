@@ -2,8 +2,8 @@
 
 import type {
   Agent,
-  Owner,
-  AgentWithOwner,
+  User,
+  AgentWithOwners,
   CreateAgentRequest,
   UpdateAgentRequest,
 } from "@/lib/types";
@@ -15,11 +15,10 @@ function nextId(): string {
   return `test-${idCounter}`;
 }
 
-export function createMockOwner(overrides: Partial<Owner> = {}): Owner {
+export function createMockUser(overrides: Partial<User> = {}): User {
   const id = overrides.id ?? nextId();
   return {
     id,
-    google_id: `google-${id}`,
     email: `user-${id}@example.com`,
     name: `Test User ${id}`,
     avatar_url: null,
@@ -32,7 +31,7 @@ export function createMockAgent(overrides: Partial<Agent> = {}): Agent {
   const id = overrides.id ?? nextId();
   return {
     id,
-    owner_id: `owner-${id}`,
+    owner_ids: [`owner-${id}`],
     slug: `test-agent-${id}`,
     name: `Test Agent ${id}`,
     description: "A test agent for unit testing",
@@ -46,18 +45,20 @@ export function createMockAgent(overrides: Partial<Agent> = {}): Agent {
   };
 }
 
-export function createMockAgentWithOwner(
+export function createMockAgentWithOwners(
   agentOverrides: Partial<Agent> = {},
-  ownerOverrides: Partial<Pick<Owner, "id" | "name" | "avatar_url">> = {}
-): AgentWithOwner {
+  ownerOverrides: Partial<Pick<User, "id" | "name" | "avatar_url">> = {}
+): AgentWithOwners {
   const agent = createMockAgent(agentOverrides);
   return {
     ...agent,
-    owner: {
-      id: ownerOverrides.id ?? agent.owner_id,
-      name: ownerOverrides.name ?? "Test Owner",
-      avatar_url: ownerOverrides.avatar_url ?? null,
-    },
+    owners: [
+      {
+        id: ownerOverrides.id ?? agent.owner_ids[0],
+        name: ownerOverrides.name ?? "Test Owner",
+        avatar_url: ownerOverrides.avatar_url ?? null,
+      },
+    ],
   };
 }
 

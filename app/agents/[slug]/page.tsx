@@ -4,7 +4,8 @@ import Image from "next/image";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
-import { getMockAgent } from "@/lib/mock-data";
+import { createClient } from "@/lib/supabase/server";
+import type { Agent, AgentWithOwners, User } from "@/lib/types";
 import {
   Globe,
   Github,
@@ -18,9 +19,32 @@ interface Props {
   params: Promise<{ slug: string }>;
 }
 
+async function getAgentWithOwners(
+  slug: string
+): Promise<AgentWithOwners | null> {
+  const supabase = await createClient();
+  const { data: agent } = await supabase
+    .from("agents")
+    .select("*")
+    .eq("slug", slug)
+    .single<Agent>();
+
+  if (!agent) return null;
+
+  const { data: owners } = await supabase
+    .from("users")
+    .select("id, name, avatar_url")
+    .in("id", agent.owner_ids);
+
+  return {
+    ...agent,
+    owners: (owners ?? []) as Pick<User, "id" | "name" | "avatar_url">[],
+  };
+}
+
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug } = await params;
-  const agent = getMockAgent(slug);
+  const agent = await getAgentWithOwners(slug);
   if (!agent) return { title: "Agent Not Found" };
 
   const title = agent.name;
@@ -33,7 +57,12 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   return {
     title,
     description,
-    keywords: [agent.name, "AI agent", "trust score", ...agent.skills.slice(0, 5)],
+    keywords: [
+      agent.name,
+      "AI agent",
+      "trust score",
+      ...agent.skills.slice(0, 5),
+    ],
     alternates: {
       canonical: url,
     },
@@ -61,20 +90,23 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 }
 
 function JsonLd({ data }: { data: Record<string, unknown> }) {
-  const html = JSON.stringify(data).replace(/</g, "\\u003c");
   return (
     <script
       type="application/ld+json"
-      dangerouslySetInnerHTML={{ __html: html }}
+      dangerouslySetInnerHTML={{
+        __html: JSON.stringify(data).replace(/</g, "\\u003c"),
+      }}
     />
   );
 }
 
 export default async function AgentProfilePage({ params }: Props) {
   const { slug } = await params;
-  const agent = getMockAgent(slug);
+  const agent = await getAgentWithOwners(slug);
 
   if (!agent) notFound();
+
+  const primaryOwner = agent.owners[0];
 
   const createdDate = new Date(agent.created_at).toLocaleDateString("en-US", {
     year: "numeric",
@@ -82,7 +114,6 @@ export default async function AgentProfilePage({ params }: Props) {
     day: "numeric",
   });
 
-  // Structured data for search engine rich snippets (SoftwareApplication schema)
   const jsonLd: Record<string, unknown> = {
     "@context": "https://schema.org",
     "@type": "SoftwareApplication",
@@ -91,10 +122,12 @@ export default async function AgentProfilePage({ params }: Props) {
     url: `https://clawpact.com/agents/${agent.slug}`,
     applicationCategory: "AI Agent",
     operatingSystem: "Cloud",
-    author: {
-      "@type": "Person",
-      name: agent.owner.name,
-    },
+    ...(primaryOwner && {
+      author: {
+        "@type": "Person",
+        name: primaryOwner.name,
+      },
+    }),
     ...(agent.moltbook_karma !== null && {
       aggregateRating: {
         "@type": "AggregateRating",
@@ -114,26 +147,28 @@ export default async function AgentProfilePage({ params }: Props) {
       <JsonLd data={jsonLd} />
 
       {/* Owner info */}
-      <div className="flex items-center gap-3">
-        {agent.owner.avatar_url ? (
-          <Image
-            src={agent.owner.avatar_url}
-            alt={agent.owner.name}
-            width={32}
-            height={32}
-            className="size-8 border border-border"
-            unoptimized
-          />
-        ) : (
-          <div className="flex size-8 items-center justify-center border border-border bg-muted text-xs font-medium">
-            {agent.owner.name.charAt(0)}
+      {primaryOwner && (
+        <div className="flex items-center gap-3">
+          {primaryOwner.avatar_url ? (
+            <Image
+              src={primaryOwner.avatar_url}
+              alt={primaryOwner.name}
+              width={32}
+              height={32}
+              className="size-8 border border-border"
+              unoptimized
+            />
+          ) : (
+            <div className="flex size-8 items-center justify-center border border-border bg-muted text-xs font-medium">
+              {primaryOwner.name.charAt(0)}
+            </div>
+          )}
+          <div>
+            <p className="text-xs font-medium">{primaryOwner.name}</p>
+            <p className="text-[10px] text-muted-foreground">Agent builder</p>
           </div>
-        )}
-        <div>
-          <p className="text-xs font-medium">{agent.owner.name}</p>
-          <p className="text-[10px] text-muted-foreground">Agent builder</p>
         </div>
-      </div>
+      )}
 
       {/* Agent name and description */}
       <h1 className="mt-6 text-2xl font-semibold tracking-tight">
@@ -158,7 +193,6 @@ export default async function AgentProfilePage({ params }: Props) {
 
       {/* Metadata grid */}
       <div className="grid gap-4 sm:grid-cols-2">
-        {/* Moltbook karma */}
         {agent.moltbook_karma !== null && (
           <div className="flex items-start gap-3 border border-border p-4">
             <Sparkles className="mt-0.5 size-4 text-muted-foreground shrink-0" />
@@ -171,11 +205,12 @@ export default async function AgentProfilePage({ params }: Props) {
           </div>
         )}
 
-        {/* Registered date */}
         <div className="flex items-start gap-3 border border-border p-4">
           <Calendar className="mt-0.5 size-4 text-muted-foreground shrink-0" />
           <div>
-            <p className="text-xs text-muted-foreground">Registered on ClawPact</p>
+            <p className="text-xs text-muted-foreground">
+              Registered on ClawPact
+            </p>
             <p className="mt-0.5 text-sm font-medium">{createdDate}</p>
           </div>
         </div>
@@ -185,14 +220,36 @@ export default async function AgentProfilePage({ params }: Props) {
       {(agent.website_url || agent.github_url) && (
         <div className="mt-6 flex flex-wrap gap-2">
           {agent.website_url && (
-            <Button variant="outline" size="sm" nativeButton={false} render={<a href={agent.website_url} target="_blank" rel="noopener noreferrer" />}>
+            <Button
+              variant="outline"
+              size="sm"
+              nativeButton={false}
+              render={
+                <a
+                  href={agent.website_url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                />
+              }
+            >
               <Globe className="size-3.5" data-icon="inline-start" />
               Website
               <ArrowUpRight className="size-3 text-muted-foreground" />
             </Button>
           )}
           {agent.github_url && (
-            <Button variant="outline" size="sm" nativeButton={false} render={<a href={agent.github_url} target="_blank" rel="noopener noreferrer" />}>
+            <Button
+              variant="outline"
+              size="sm"
+              nativeButton={false}
+              render={
+                <a
+                  href={agent.github_url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                />
+              }
+            >
               <Github className="size-3.5" data-icon="inline-start" />
               GitHub
               <ArrowUpRight className="size-3 text-muted-foreground" />

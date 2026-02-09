@@ -1,8 +1,7 @@
 import type { MetadataRoute } from "next";
-import { mockAgents } from "@/lib/mock-data";
+import { createClient } from "@/lib/supabase/server";
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-  // Static pages
   const staticPages: MetadataRoute.Sitemap = [
     {
       url: "https://clawpact.com",
@@ -12,9 +11,12 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     },
   ];
 
-  // Dynamic agent pages
-  // TODO: Replace with real Supabase query when moving off mock data
-  const agentPages: MetadataRoute.Sitemap = mockAgents.map((agent) => ({
+  const supabase = await createClient();
+  const { data: agents } = await supabase
+    .from("agents")
+    .select("slug, updated_at");
+
+  const agentPages: MetadataRoute.Sitemap = (agents ?? []).map((agent) => ({
     url: `https://clawpact.com/agents/${agent.slug}`,
     lastModified: new Date(agent.updated_at),
     changeFrequency: "weekly",

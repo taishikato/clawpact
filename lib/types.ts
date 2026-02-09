@@ -1,8 +1,7 @@
 // Core domain types for ClawPact
 
-export interface Owner {
+export interface User {
   id: string;
-  google_id: string;
   email: string;
   name: string;
   avatar_url: string | null;
@@ -11,7 +10,7 @@ export interface Owner {
 
 export interface Agent {
   id: string;
-  owner_id: string;
+  owner_ids: string[];
   slug: string;
   name: string;
   description: string;
@@ -23,15 +22,9 @@ export interface Agent {
   updated_at: string;
 }
 
-// Agent with joined owner data (used for public profile display)
-export interface AgentWithOwner extends Agent {
-  owner: Pick<Owner, "id" | "name" | "avatar_url">;
-}
-
-// Convenience alias for UI components that only need display fields
-export interface AgentOwner {
-  name: string;
-  avatar_url: string | null;
+// Agent with resolved owner data (used for public profile display)
+export interface AgentWithOwners extends Agent {
+  owners: Pick<User, "id" | "name" | "avatar_url">[];
 }
 
 // API request types
