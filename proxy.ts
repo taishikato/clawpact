@@ -1,5 +1,3 @@
-// Root middleware - refreshes Supabase auth session on every request
-
 import { type NextRequest } from "next/server";
 import { updateSession } from "@/lib/supabase/middleware";
 
