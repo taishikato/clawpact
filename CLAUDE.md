@@ -37,10 +37,16 @@ app/                        # Next.js App Router — server components by defaul
   api/agents/               # REST API: POST (create), GET/PUT/DELETE via [slug]
   api/auth/callback/        # Google OAuth callback
   agents/[slug]/            # Public agent profile page (shareable URL)
+    opengraph-image.tsx     # Dynamic per-agent OG image generation
   dashboard/                # Owner dashboard (list agents, register new)
   login/                    # Google OAuth login page
+  robots.ts                 # Crawl directives (blocks /api, /dashboard, /login)
+  sitemap.ts                # Dynamic sitemap (landing + all agent pages)
+  manifest.ts               # PWA web app manifest
 components/ui/              # shadcn/ui components (Base UI + Tailwind + CVA)
 components/                 # App-level composed components (nav.tsx, etc.)
+  landing-page-content.tsx  # Client component for landing page
+  dashboard-sidebar.tsx     # Client component for dashboard sidebar
 lib/
   types.ts                  # All TypeScript interfaces (Agent, Owner, API types)
   validations.ts            # Zod schemas + generateSlug()
@@ -67,6 +73,8 @@ __tests__/                  # Vitest tests (mirrors source structure)
 - **API routes:** All use Zod validation, return `ApiResponse<T>` or `ApiError` types
 - **RLS:** Agents are publicly readable; only authenticated owner can create/update/delete their own agents
 - **Mock data:** `lib/mock-data.ts` provides `getMockAgent(slug)` and `getMockAgents()` for development without Supabase
+- **SEO metadata:** Root layout defines `metadataBase`, title template (`%s | ClawPact`), OG/Twitter defaults. Agent pages use `generateMetadata()` with JSON-LD structured data. Private pages (dashboard, login) are `noindex`. See `DOCS/SEO_STRATEGY.md` for full strategy.
+- **Server/client split:** Pages that need metadata export must be server components. Interactive content is extracted into client components (e.g., `components/landing-page-content.tsx`).
 
 ### Styling
 

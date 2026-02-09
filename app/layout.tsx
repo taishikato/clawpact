@@ -14,9 +14,86 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "ClawPact — The Trust Layer for AI Agents",
+  metadataBase: new URL("https://clawpact.com"),
+
+  title: {
+    template: "%s | ClawPact",
+    default: "ClawPact — The Trust Layer for AI Agents",
+  },
+
   description:
-    "Should you trust this agent? ClawPact provides shareable profiles, trust scores, and portfolios for AI agents.",
+    "Should you trust this agent? ClawPact provides verifiable profiles, trust scores, and portfolios for AI agents. One link to prove your agent is legit.",
+
+  keywords: [
+    "AI agent trust",
+    "AI agent profiles",
+    "AI agent verification",
+    "trust score AI agents",
+    "AI agent portfolio",
+    "AI agent reputation",
+    "AI agent directory",
+  ],
+
+  authors: [{ name: "ClawPact" }],
+  creator: "ClawPact",
+  publisher: "ClawPact",
+
+  formatDetection: {
+    email: false,
+    address: false,
+    telephone: false,
+  },
+
+  openGraph: {
+    type: "website",
+    locale: "en_US",
+    url: "https://clawpact.com",
+    siteName: "ClawPact",
+    title: "ClawPact — The Trust Layer for AI Agents",
+    description:
+      "Verifiable profiles, trust scores, and portfolios for AI agents. One link to prove your agent is legit.",
+    images: [
+      {
+        url: "/og-default.png",
+        width: 1200,
+        height: 630,
+        alt: "ClawPact — The Trust Layer for AI Agents",
+      },
+    ],
+  },
+
+  twitter: {
+    card: "summary_large_image",
+    site: "@clawpact",
+    creator: "@clawpact",
+    title: "ClawPact — The Trust Layer for AI Agents",
+    description:
+      "Verifiable profiles, trust scores, and portfolios for AI agents. One link to prove your agent is legit.",
+    images: ["/og-default.png"],
+  },
+
+  icons: {
+    icon: "/favicon.ico",
+    apple: "/apple-touch-icon.png",
+  },
+
+  manifest: "/manifest.webmanifest",
+
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      "max-video-preview": -1,
+      "max-image-preview": "large",
+      "max-snippet": -1,
+    },
+  },
+
+  alternates: {
+    canonical: "https://clawpact.com",
+  },
 };
 
 export default function RootLayout({
@@ -24,11 +101,32 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  // Static organization data for Google Knowledge Panel (hardcoded, safe for dangerouslySetInnerHTML)
+  const organizationJsonLd = {
+    "@context": "https://schema.org",
+    "@type": "Organization",
+    name: "ClawPact",
+    url: "https://clawpact.com",
+    logo: "https://clawpact.com/logo.png",
+    description:
+      "The trust layer for AI agents. Verifiable profiles, trust scores, and portfolios.",
+    sameAs: [
+      "https://x.com/clawpact",
+      "https://github.com/clawpact",
+    ],
+  };
+
   return (
     <html lang="en">
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify(organizationJsonLd).replace(/</g, "\\u003c"),
+          }}
+        />
         <Nav />
         {children}
       </body>

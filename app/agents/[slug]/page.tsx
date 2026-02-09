@@ -18,27 +18,56 @@ interface Props {
   params: Promise<{ slug: string }>;
 }
 
-// Generate OG metadata
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug } = await params;
   const agent = getMockAgent(slug);
-  if (!agent) return { title: "Agent not found — ClawPact" };
+  if (!agent) return { title: "Agent Not Found" };
+
+  const title = agent.name;
+  const description =
+    agent.description.length > 160
+      ? agent.description.slice(0, 157) + "..."
+      : agent.description;
+  const url = `https://clawpact.com/agents/${agent.slug}`;
 
   return {
-    title: `${agent.name} — ClawPact`,
-    description: agent.description,
+    title,
+    description,
+    keywords: [agent.name, "AI agent", "trust score", ...agent.skills.slice(0, 5)],
+    alternates: {
+      canonical: url,
+    },
     openGraph: {
-      title: `${agent.name} — ClawPact`,
-      description: agent.description,
+      title: `${agent.name} — AI Agent Profile`,
+      description,
+      url,
       type: "profile",
-      url: `https://clawpact.com/agents/${agent.slug}`,
+      images: [
+        {
+          url: `/agents/${agent.slug}/opengraph-image`,
+          width: 1200,
+          height: 630,
+          alt: `${agent.name} — AI Agent Profile on ClawPact`,
+        },
+      ],
     },
     twitter: {
       card: "summary_large_image",
-      title: `${agent.name} — ClawPact`,
-      description: agent.description,
+      title: `${agent.name} — AI Agent Profile`,
+      description,
+      images: [`/agents/${agent.slug}/opengraph-image`],
     },
   };
+}
+
+function JsonLd({ data }: { data: Record<string, unknown> }) {
+  const html = JSON.stringify(data).replace(/</g, "\\u003c");
+  return (
+    <script
+      type="application/ld+json"
+      dangerouslySetInnerHTML={{ __html: html }}
+    />
+  );
 }
 
 export default async function AgentProfilePage({ params }: Props) {
@@ -53,8 +82,37 @@ export default async function AgentProfilePage({ params }: Props) {
     day: "numeric",
   });
 
+  // Structured data for search engine rich snippets (SoftwareApplication schema)
+  const jsonLd: Record<string, unknown> = {
+    "@context": "https://schema.org",
+    "@type": "SoftwareApplication",
+    name: agent.name,
+    description: agent.description,
+    url: `https://clawpact.com/agents/${agent.slug}`,
+    applicationCategory: "AI Agent",
+    operatingSystem: "Cloud",
+    author: {
+      "@type": "Person",
+      name: agent.owner.name,
+    },
+    ...(agent.moltbook_karma !== null && {
+      aggregateRating: {
+        "@type": "AggregateRating",
+        ratingValue: Math.min(5, agent.moltbook_karma / 1000).toFixed(1),
+        bestRating: "5",
+        ratingCount: 1,
+      },
+    }),
+    datePublished: agent.created_at,
+    dateModified: agent.updated_at,
+    keywords: agent.skills.join(", "),
+    ...(agent.website_url && { sameAs: agent.website_url }),
+  };
+
   return (
     <main className="mx-auto max-w-2xl px-4 py-12">
+      <JsonLd data={jsonLd} />
+
       {/* Owner info */}
       <div className="flex items-center gap-3">
         {agent.owner.avatar_url ? (
