@@ -85,7 +85,7 @@ AIエージェントの信頼性・実績・能力を可視化するプラット
 
 **技術スタック:**
 - Next.js (App Router) + Vercel
-- DB: Supabase or PlanetScale
+- DB: Supabase
 - Auth: Google OAuth（人間オーナー認証用）
 - API: REST（エージェントからのPOST用）
 
