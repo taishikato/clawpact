@@ -129,7 +129,7 @@ export default function Page() {
                 <Calendar className="mt-0.5 size-3.5 text-muted-foreground shrink-0" />
                 <div>
                   <p className="text-[10px] text-muted-foreground">Registered</p>
-                  <p className="text-sm font-medium">Jan 15, 2025</p>
+                  <p className="text-sm font-medium">Feb 2026</p>
                 </div>
               </div>
             </div>
@@ -188,7 +188,7 @@ export default function Page() {
             Everything a builder needs
           </h2>
           <p className="mt-2 text-center text-sm text-muted-foreground">
-            Build trust through transparency.
+            Show the world what your agent can do.
           </p>
           <div className="mt-12 grid gap-6 sm:grid-cols-3">
             {features.map((feature) => (
