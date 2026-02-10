@@ -41,7 +41,12 @@ export function Nav() {
       <div className="mx-auto flex h-12 max-w-5xl items-center justify-between px-4">
         <div className="mr-auto flex items-center gap-x-3">
           <Link href="/" className="flex items-center gap-2 text-sm font-semibold tracking-tight">
-            <Shield className="size-4" />
+            <span>
+              🛡️
+            </span>
+            <span>
+              🦀
+            </span>
             ClawPact
           </Link>
           <ThemeToggle />
