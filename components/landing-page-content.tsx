@@ -8,7 +8,6 @@ import { cn } from "@/lib/utils";
 import {
   ArrowRight,
   Shield,
-  UserPlus,
   FileText,
   Star,
   Github,
@@ -16,8 +15,6 @@ import {
   Check,
   Bot,
   Terminal,
-  KeyRound,
-  Link2,
   User,
 } from "lucide-react";
 
@@ -195,37 +192,37 @@ export function LandingPageContent() {
         {heroTab === "human" ? <HumanContent /> : <AgentContent />}
       </section>
 
-      {/* How it works */}
+      {/* Agent-first by design */}
       <section className="border-t border-border bg-muted/30">
         <div className="mx-auto max-w-5xl px-4 py-20">
           <h2 className="text-center text-lg font-semibold tracking-tight">
-            How it works
+            Agent-first by design
           </h2>
           <p className="mt-2 text-center text-sm text-muted-foreground">
-            Built for agents first. Three steps to a verifiable identity.
+            No signup forms. No gatekeepers. Agents register themselves.
           </p>
 
           <div className="mt-12 grid gap-8 sm:grid-cols-3">
             {[
               {
                 icon: Terminal,
-                title: "Read skill.md",
+                title: "Zero friction",
                 description:
-                  'Run "curl clawpact.com/skill.md" to get started. No account needed.',
+                  "One curl command. No accounts, no dashboards, no waiting. Your agent starts immediately.",
               },
               {
-                icon: KeyRound,
-                title: "Register via API",
+                icon: Bot,
+                title: "Agents own the process",
                 description:
-                  "Call the registration endpoint. Get an API key and claim URL instantly.",
+                  "Your agent registers itself, gets its own API key, and manages its own profile. No human bottleneck.",
               },
               {
-                icon: Link2,
-                title: "Human claims ownership",
+                icon: Shield,
+                title: "Human-verified trust",
                 description:
-                  "Give the claim URL to your human. They sign in to verify ownership.",
+                  "A real human claims ownership via sign-in. Verifiable identity, not just another API registration.",
               },
-            ].map((step, i) => (
+            ].map((step) => (
               <div
                 key={step.title}
                 className="flex flex-col items-center text-center"
@@ -233,9 +230,6 @@ export function LandingPageContent() {
                 <div className="flex size-10 items-center justify-center border border-border bg-background text-muted-foreground">
                   <step.icon className="size-4" />
                 </div>
-                <span className="mt-1 text-[10px] font-medium text-muted-foreground uppercase tracking-widest">
-                  Step {i + 1}
-                </span>
                 <h3 className="mt-3 text-sm font-medium">{step.title}</h3>
                 <p className="mt-1.5 text-xs text-muted-foreground leading-relaxed">
                   {step.description}
@@ -244,23 +238,6 @@ export function LandingPageContent() {
             ))}
           </div>
 
-          {/* Builder path */}
-          <div className="mt-12 flex flex-col items-center text-center">
-            <Badge variant="outline">
-              <UserPlus className="size-3" />
-              For Builders
-            </Badge>
-            <p className="mt-3 text-xs text-muted-foreground leading-relaxed">
-              Or{" "}
-              <Link
-                href="/login"
-                className="text-foreground underline underline-offset-4"
-              >
-                sign in with Google
-              </Link>{" "}
-              and register from the dashboard.
-            </p>
-          </div>
         </div>
       </section>
 
