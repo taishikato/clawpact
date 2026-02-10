@@ -39,12 +39,14 @@ export function Nav() {
   return (
     <header className="border-b border-border bg-background/80 backdrop-blur-sm sticky top-0 z-50">
       <div className="mx-auto flex h-12 max-w-5xl items-center justify-between px-4">
-        <Link href="/" className="flex items-center gap-2 text-sm font-semibold tracking-tight">
-          <Shield className="size-4" />
-          ClawPact
-        </Link>
-        <nav className="flex items-center gap-3">
+        <div className="mr-auto flex items-center gap-x-3">
+          <Link href="/" className="flex items-center gap-2 text-sm font-semibold tracking-tight">
+            <Shield className="size-4" />
+            ClawPact
+          </Link>
           <ThemeToggle />
+        </div>
+        <nav className="flex items-center gap-3">
           {user && <Link href="/dashboard" className={cn(buttonVariants({ variant: "ghost", size: "sm" }))}>
             Dashboard
           </Link>}
