@@ -73,7 +73,7 @@ lib/
   supabase/client.ts        # Browser Supabase client
   supabase/server.ts        # Server Supabase client (RSC/API routes)
   supabase/middleware.ts     # Session refresh helper
-supabase/migrations/        # SQL migration files (001–003: initial_schema, api_keys, agent_first_registration)
+supabase/migrations/        # SQL migration files (001–004: initial_schema, api_keys, agent_first_registration, remove_auto_user_creation)
 skill/SKILL.md              # OpenClaw skill for agent self-registration via API
 __tests__/                  # Vitest tests (mirrors source structure)
   helpers/factories.ts      # Test data factories
@@ -86,7 +86,7 @@ __tests__/                  # Vitest tests (mirrors source structure)
 
 ### Key Patterns
 
-- **Auth flow:** Google OAuth via Supabase → `auth/callback` exchanges code for session → DB trigger auto-creates user record → redirects to dashboard. Login/logout use server actions in `app/login/actions.ts`.
+- **Auth flow (claim-only signup):** No manual signup. `public.users` records are only created during the claim flow. `auth/callback` acts as gatekeeper: checks `public.users` for the authenticated user — if found, normal redirect; if not found AND redirecting to `/claim/*`, creates the `public.users` record from auth metadata then redirects to claim page; otherwise signs out and redirects to `/login?error=no_account`. Login/logout use server actions in `app/login/actions.ts`.
 - **Agent ownership:** `agents.owner_ids` is a `uuid[]` array supporting multiple owners. Queries use `.contains("owner_ids", [userId])` for filtering, `auth.uid() = ANY(owner_ids)` in RLS policies, and GIN index for performance.
 - **Agent slugs:** Auto-generated from agent name via `generateSlug()` in `lib/validations.ts`
 - **API routes (session auth):** `app/api/agents/` uses Supabase session auth via `requireAuth()`. Returns `ApiResponse<T>` or `ApiError` types.

@@ -13,9 +13,6 @@ import {
   Star,
   Github,
   Twitter,
-  Sparkles,
-  Calendar,
-  Globe,
   Check,
   Bot,
   Terminal,
@@ -50,87 +47,47 @@ const features = [
 
 function HumanContent() {
   return (
-    <div className="mx-auto mt-12 max-w-md">
-      {/* Profile mockup card */}
+    <div className="mx-auto mt-12 max-w-lg">
+      {/* Send to your agent card */}
       <div className="border border-border bg-background p-6 shadow-sm">
-        {/* Owner */}
-        <div className="flex items-center gap-3">
-          <div className="flex size-8 items-center justify-center border border-border bg-muted text-xs font-medium">
-            A
-          </div>
-          <div>
-            <p className="text-xs font-medium">Alice Chen</p>
-            <p className="text-[10px] text-muted-foreground">
-              Agent builder
-            </p>
-          </div>
-        </div>
-        {/* Agent name */}
-        <h3 className="mt-4 text-lg font-semibold tracking-tight">
-          CodeReview Pro
+        <h3 className="text-center text-sm font-semibold tracking-tight">
+          Send Your AI Agent to ClawPact
         </h3>
-        <p className="mt-1.5 text-xs text-muted-foreground leading-relaxed">
-          Automated code review for bugs, security vulnerabilities, and
-          style issues across multiple languages.
-        </p>
-        {/* Skills */}
-        <div className="mt-4 flex flex-wrap gap-1.5">
-          {["Code Review", "Security Analysis", "TypeScript", "Python"].map(
-            (skill) => (
-              <Badge key={skill} variant="secondary" className="text-[10px]">
-                {skill}
-              </Badge>
-            )
-          )}
-        </div>
-        {/* Metrics row */}
-        <div className="mt-5 grid grid-cols-2 gap-3">
-          <div className="flex items-start gap-2.5 border border-border p-3">
-            <Sparkles className="mt-0.5 size-3.5 text-muted-foreground shrink-0" />
-            <div>
-              <p className="text-[10px] text-muted-foreground">
-                Moltbook Karma
-              </p>
-              <p className="text-sm font-semibold tabular-nums">4,820</p>
-            </div>
-          </div>
-          <div className="flex items-start gap-2.5 border border-border p-3">
-            <Calendar className="mt-0.5 size-3.5 text-muted-foreground shrink-0" />
-            <div>
-              <p className="text-[10px] text-muted-foreground">
-                Registered
-              </p>
-              <p className="text-sm font-medium">Feb 2026</p>
-            </div>
-          </div>
-        </div>
-        {/* Footer */}
-        <div className="mt-5 flex items-center justify-between">
-          <div className="flex items-center gap-1.5 text-muted-foreground">
-            <Shield className="size-3" />
-            <span className="text-[9px] uppercase tracking-widest">
-              Verified on ClawPact
-            </span>
-          </div>
-          <div className="flex items-center gap-2 text-muted-foreground">
-            <Globe className="size-3.5" />
-            <Github className="size-3.5" />
-          </div>
-        </div>
-      </div>
-      <p className="mt-3 text-center text-[10px] text-muted-foreground">
-        clawpact.com/agents/codereview-pro
-      </p>
 
-      {/* Human CTA */}
-      <div className="mt-8 flex justify-center">
-        <Link
-          href="/dashboard/new"
-          className={cn(buttonVariants({ size: "lg" }))}
-        >
-          Register an agent
-          <ArrowRight className="size-3.5" data-icon="inline-end" />
-        </Link>
+        {/* Code block */}
+        <div className="mt-5 border border-border bg-muted/50 p-4 font-mono text-sm">
+          <span className="text-muted-foreground select-none">$ </span>
+          <span>curl -s https://clawpact.com/skill.md</span>
+        </div>
+
+        {/* 3 steps */}
+        <ol className="mt-5 space-y-2.5">
+          {[
+            "Send this to your AI agent",
+            "Your agent registers and gives you a claim link",
+            "Sign in with Google to verify ownership",
+          ].map((text, i) => (
+            <li key={i} className="flex items-start gap-3">
+              <span className="flex size-5 shrink-0 items-center justify-center border border-border bg-muted text-[10px] font-semibold text-muted-foreground">
+                {i + 1}
+              </span>
+              <p className="text-xs text-muted-foreground leading-relaxed pt-0.5">
+                {text}
+              </p>
+            </li>
+          ))}
+        </ol>
+
+        <div className="mt-6 flex justify-center">
+          <Link
+            href="/skill.md"
+            className={cn(buttonVariants({ variant: "outline", size: "sm" }))}
+          >
+            <FileText className="size-3" data-icon="inline-start" />
+            Read full instructions
+            <ArrowRight className="size-3" data-icon="inline-end" />
+          </Link>
+        </div>
       </div>
     </div>
   );
@@ -362,18 +319,18 @@ export function LandingPageContent() {
           </p>
           <div className="mt-6 flex items-center gap-3">
             <Link
-              href="/dashboard/new"
-              className={cn(buttonVariants({ size: "lg" }))}
-            >
-              Get started
-              <ArrowRight className="size-3.5" data-icon="inline-end" />
-            </Link>
-            <Link
               href="/skill.md"
-              className={cn(buttonVariants({ variant: "outline", size: "lg" }))}
+              className={cn(buttonVariants({ size: "lg" }))}
             >
               <Terminal className="size-3.5" data-icon="inline-start" />
               Read skill.md
+            </Link>
+            <Link
+              href="/login"
+              className={cn(buttonVariants({ variant: "outline", size: "lg" }))}
+            >
+              Sign in
+              <ArrowRight className="size-3.5" data-icon="inline-end" />
             </Link>
           </div>
         </div>
