@@ -1,5 +1,6 @@
 "use client"
 
+import { useState } from "react";
 import Link from "next/link";
 import { buttonVariants } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -20,29 +21,10 @@ import {
   Terminal,
   KeyRound,
   Link2,
+  User,
 } from "lucide-react";
 
-// How it works — Agent-first flow
-const agentSteps = [
-  {
-    icon: Terminal,
-    title: "Read skill.md",
-    description:
-      'Run "curl clawpact.com/skill.md" to get started. No account needed.',
-  },
-  {
-    icon: KeyRound,
-    title: "Register via API",
-    description:
-      "Call the registration endpoint. Get an API key and claim URL instantly.",
-  },
-  {
-    icon: Link2,
-    title: "Human claims ownership",
-    description:
-      "Give the claim URL to your human. They sign in to verify ownership.",
-  },
-];
+type HeroTab = "human" | "agent";
 
 // Features — active (Phase 1) items have no badge; upcoming items have "Coming soon"
 const features = [
@@ -66,7 +48,145 @@ const features = [
   },
 ];
 
+function HumanContent() {
+  return (
+    <div className="mx-auto mt-12 max-w-md">
+      {/* Profile mockup card */}
+      <div className="border border-border bg-background p-6 shadow-sm">
+        {/* Owner */}
+        <div className="flex items-center gap-3">
+          <div className="flex size-8 items-center justify-center border border-border bg-muted text-xs font-medium">
+            A
+          </div>
+          <div>
+            <p className="text-xs font-medium">Alice Chen</p>
+            <p className="text-[10px] text-muted-foreground">
+              Agent builder
+            </p>
+          </div>
+        </div>
+        {/* Agent name */}
+        <h3 className="mt-4 text-lg font-semibold tracking-tight">
+          CodeReview Pro
+        </h3>
+        <p className="mt-1.5 text-xs text-muted-foreground leading-relaxed">
+          Automated code review for bugs, security vulnerabilities, and
+          style issues across multiple languages.
+        </p>
+        {/* Skills */}
+        <div className="mt-4 flex flex-wrap gap-1.5">
+          {["Code Review", "Security Analysis", "TypeScript", "Python"].map(
+            (skill) => (
+              <Badge key={skill} variant="secondary" className="text-[10px]">
+                {skill}
+              </Badge>
+            )
+          )}
+        </div>
+        {/* Metrics row */}
+        <div className="mt-5 grid grid-cols-2 gap-3">
+          <div className="flex items-start gap-2.5 border border-border p-3">
+            <Sparkles className="mt-0.5 size-3.5 text-muted-foreground shrink-0" />
+            <div>
+              <p className="text-[10px] text-muted-foreground">
+                Moltbook Karma
+              </p>
+              <p className="text-sm font-semibold tabular-nums">4,820</p>
+            </div>
+          </div>
+          <div className="flex items-start gap-2.5 border border-border p-3">
+            <Calendar className="mt-0.5 size-3.5 text-muted-foreground shrink-0" />
+            <div>
+              <p className="text-[10px] text-muted-foreground">
+                Registered
+              </p>
+              <p className="text-sm font-medium">Feb 2026</p>
+            </div>
+          </div>
+        </div>
+        {/* Footer */}
+        <div className="mt-5 flex items-center justify-between">
+          <div className="flex items-center gap-1.5 text-muted-foreground">
+            <Shield className="size-3" />
+            <span className="text-[9px] uppercase tracking-widest">
+              Verified on ClawPact
+            </span>
+          </div>
+          <div className="flex items-center gap-2 text-muted-foreground">
+            <Globe className="size-3.5" />
+            <Github className="size-3.5" />
+          </div>
+        </div>
+      </div>
+      <p className="mt-3 text-center text-[10px] text-muted-foreground">
+        clawpact.com/agents/codereview-pro
+      </p>
+
+      {/* Human CTA */}
+      <div className="mt-8 flex justify-center">
+        <Link
+          href="/dashboard/new"
+          className={cn(buttonVariants({ size: "lg" }))}
+        >
+          Register an agent
+          <ArrowRight className="size-3.5" data-icon="inline-end" />
+        </Link>
+      </div>
+    </div>
+  );
+}
+
+function AgentContent() {
+  return (
+    <div className="mx-auto mt-12 max-w-lg">
+      {/* Agent registration card */}
+      <div className="border border-border bg-background p-6 shadow-sm">
+        <h3 className="text-center text-sm font-semibold tracking-tight">
+          Register Your AI Agent on ClawPact
+        </h3>
+
+        {/* Code block */}
+        <div className="mt-5 border border-border bg-muted/50 p-4 font-mono text-sm">
+          <span className="text-muted-foreground select-none">$ </span>
+          <span>curl -s https://clawpact.com/skill.md</span>
+        </div>
+
+        {/* 3 steps */}
+        <ol className="mt-5 space-y-2.5">
+          {[
+            "Send this to your agent",
+            "They sign up & send you a claim link",
+            "Sign in with Google to verify ownership",
+          ].map((text, i) => (
+            <li key={i} className="flex items-start gap-3">
+              <span className="flex size-5 shrink-0 items-center justify-center border border-border bg-muted text-[10px] font-semibold text-muted-foreground">
+                {i + 1}
+              </span>
+              <p className="text-xs text-muted-foreground leading-relaxed pt-0.5">
+                {text}
+              </p>
+            </li>
+          ))}
+        </ol>
+
+        <div className="mt-6 flex justify-center">
+          <Link
+            href="/skill.md"
+            className={cn(buttonVariants({ variant: "outline", size: "sm" }))}
+          >
+            <FileText className="size-3" data-icon="inline-start" />
+            Read full instructions
+            <ArrowRight className="size-3" data-icon="inline-end" />
+          </Link>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 export function LandingPageContent() {
+  const [heroTab, setHeroTab] = useState<HeroTab>("human");
+
   return (
     <main>
       {/* Hero */}
@@ -84,96 +204,38 @@ export function LandingPageContent() {
           <p className="mt-4 max-w-lg text-sm text-muted-foreground leading-relaxed">
             One link to prove your agent is legit.
           </p>
+
+          {/* Hero tabs — Moltbook style */}
           <div className="mt-8 flex items-center gap-3">
-            <Link
-              href="/dashboard/new"
-              className={cn(buttonVariants({ size: "lg" }))}
+            <button
+              onClick={() => setHeroTab("human")}
+              className={cn(
+                "flex items-center gap-2 px-5 py-2.5 text-sm font-medium transition-colors border",
+                heroTab === "human"
+                  ? "bg-primary text-primary-foreground border-primary"
+                  : "bg-transparent text-muted-foreground border-border hover:text-foreground hover:border-foreground/30"
+              )}
             >
-              Register an agent
-              <ArrowRight className="size-3.5" data-icon="inline-end" />
-            </Link>
-            <Link
-              href="/login"
-              className={cn(buttonVariants({ variant: "outline", size: "lg" }))}
+              <User className="size-4" />
+              I&apos;m a Human
+            </button>
+            <button
+              onClick={() => setHeroTab("agent")}
+              className={cn(
+                "flex items-center gap-2 px-5 py-2.5 text-sm font-medium transition-colors border",
+                heroTab === "agent"
+                  ? "bg-primary text-primary-foreground border-primary"
+                  : "bg-transparent text-muted-foreground border-border hover:text-foreground hover:border-foreground/30"
+              )}
             >
-              <Bot className="size-3.5" data-icon="inline-start" />
-              I&apos;m an AI agent
-            </Link>
+              <Bot className="size-4" />
+              I&apos;m an Agent
+            </button>
           </div>
         </div>
 
-        {/* Profile mockup card */}
-        <div className="mx-auto mt-16 max-w-md">
-          <div className="border border-border bg-background p-6 shadow-sm">
-            {/* Owner */}
-            <div className="flex items-center gap-3">
-              <div className="flex size-8 items-center justify-center border border-border bg-muted text-xs font-medium">
-                A
-              </div>
-              <div>
-                <p className="text-xs font-medium">Alice Chen</p>
-                <p className="text-[10px] text-muted-foreground">
-                  Agent builder
-                </p>
-              </div>
-            </div>
-            {/* Agent name */}
-            <h3 className="mt-4 text-lg font-semibold tracking-tight">
-              CodeReview Pro
-            </h3>
-            <p className="mt-1.5 text-xs text-muted-foreground leading-relaxed">
-              Automated code review for bugs, security vulnerabilities, and
-              style issues across multiple languages.
-            </p>
-            {/* Skills */}
-            <div className="mt-4 flex flex-wrap gap-1.5">
-              {["Code Review", "Security Analysis", "TypeScript", "Python"].map(
-                (skill) => (
-                  <Badge key={skill} variant="secondary" className="text-[10px]">
-                    {skill}
-                  </Badge>
-                )
-              )}
-            </div>
-            {/* Metrics row */}
-            <div className="mt-5 grid grid-cols-2 gap-3">
-              <div className="flex items-start gap-2.5 border border-border p-3">
-                <Sparkles className="mt-0.5 size-3.5 text-muted-foreground shrink-0" />
-                <div>
-                  <p className="text-[10px] text-muted-foreground">
-                    Moltbook Karma
-                  </p>
-                  <p className="text-sm font-semibold tabular-nums">4,820</p>
-                </div>
-              </div>
-              <div className="flex items-start gap-2.5 border border-border p-3">
-                <Calendar className="mt-0.5 size-3.5 text-muted-foreground shrink-0" />
-                <div>
-                  <p className="text-[10px] text-muted-foreground">
-                    Registered
-                  </p>
-                  <p className="text-sm font-medium">Feb 2026</p>
-                </div>
-              </div>
-            </div>
-            {/* Footer */}
-            <div className="mt-5 flex items-center justify-between">
-              <div className="flex items-center gap-1.5 text-muted-foreground">
-                <Shield className="size-3" />
-                <span className="text-[9px] uppercase tracking-widest">
-                  Verified on ClawPact
-                </span>
-              </div>
-              <div className="flex items-center gap-2 text-muted-foreground">
-                <Globe className="size-3.5" />
-                <Github className="size-3.5" />
-              </div>
-            </div>
-          </div>
-          <p className="mt-3 text-center text-[10px] text-muted-foreground">
-            clawpact.com/agents/codereview-pro
-          </p>
-        </div>
+        {/* Conditional content */}
+        {heroTab === "human" ? <HumanContent /> : <AgentContent />}
       </section>
 
       {/* How it works */}
@@ -186,15 +248,27 @@ export function LandingPageContent() {
             Built for agents first. Three steps to a verifiable identity.
           </p>
 
-          {/* Agent-first steps */}
-          <div className="mt-4 flex justify-center">
-            <Badge variant="secondary">
-              <Bot className="size-3" />
-              For AI Agents
-            </Badge>
-          </div>
-          <div className="mt-8 grid gap-8 sm:grid-cols-3">
-            {agentSteps.map((step, i) => (
+          <div className="mt-12 grid gap-8 sm:grid-cols-3">
+            {[
+              {
+                icon: Terminal,
+                title: "Read skill.md",
+                description:
+                  'Run "curl clawpact.com/skill.md" to get started. No account needed.',
+              },
+              {
+                icon: KeyRound,
+                title: "Register via API",
+                description:
+                  "Call the registration endpoint. Get an API key and claim URL instantly.",
+              },
+              {
+                icon: Link2,
+                title: "Human claims ownership",
+                description:
+                  "Give the claim URL to your human. They sign in to verify ownership.",
+              },
+            ].map((step, i) => (
               <div
                 key={step.title}
                 className="flex flex-col items-center text-center"
@@ -276,63 +350,8 @@ export function LandingPageContent() {
         </div>
       </section>
 
-      {/* For AI Agents — skill.md section */}
-      <section className="border-t border-border bg-muted/30">
-        <div className="mx-auto max-w-5xl px-4 py-20">
-          <div className="flex flex-col items-center text-center">
-            <Badge variant="secondary">
-              <Terminal className="size-3" />
-              Agent Integration
-            </Badge>
-            <h2 className="mt-4 text-lg font-semibold tracking-tight">
-              For AI Agents
-            </h2>
-            <p className="mt-2 max-w-md text-sm text-muted-foreground leading-relaxed">
-              One command to learn how to register. No sign-up required.
-            </p>
-          </div>
-
-          {/* Code block */}
-          <div className="mx-auto mt-8 max-w-lg">
-            <div className="border border-border bg-background p-4 font-mono text-sm">
-              <span className="text-muted-foreground">$</span>{" "}
-              <span>curl -s https://clawpact.com/skill.md</span>
-            </div>
-          </div>
-
-          {/* Brief steps */}
-          <div className="mx-auto mt-8 max-w-lg space-y-3">
-            {[
-              "Read skill.md to understand the API",
-              "Register your agent with a single API call",
-              "Share the claim URL with your human for verification",
-            ].map((text, i) => (
-              <div key={i} className="flex items-start gap-3">
-                <span className="flex size-5 shrink-0 items-center justify-center border border-border bg-background text-[10px] font-medium text-muted-foreground">
-                  {i + 1}
-                </span>
-                <p className="text-xs text-muted-foreground leading-relaxed">
-                  {text}
-                </p>
-              </div>
-            ))}
-          </div>
-
-          <div className="mt-8 flex justify-center">
-            <Link
-              href="/skill.md"
-              className={cn(buttonVariants({ variant: "outline", size: "sm" }))}
-            >
-              <FileText className="size-3" data-icon="inline-start" />
-              Read full instructions
-              <ArrowRight className="size-3" data-icon="inline-end" />
-            </Link>
-          </div>
-        </div>
-      </section>
-
       {/* CTA */}
-      <section className="border-t border-border">
+      <section className="border-t border-border bg-muted/30">
         <div className="mx-auto flex max-w-5xl flex-col items-center px-4 py-20 text-center">
           <Star className="size-5 text-muted-foreground" />
           <h2 className="mt-4 text-lg font-semibold tracking-tight">

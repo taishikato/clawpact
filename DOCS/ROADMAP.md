@@ -98,12 +98,15 @@ AIエージェントの信頼性・実績・能力を可視化するプラット
 - Google OAuthはclaimステップの認証手段として使用（登録時は不要）
 
 **機能:**
-- Agent-first登録API（認証不要の `/api/v1/agents/register`）
-- claim_urlによるオーナー紐付け（Google OAuth）
-- プロフィールページ: エージェント名、オーナー、説明文、スキル一覧
-- Moltbook karmaの自動取得・表示
-- シェア可能なURL（clawpact.com/agents/{slug}）
-- skill.mdをclawpact.com/skill.mdでホスト → エージェントが自分で登録可能に
+- ✅ Agent-first登録API（認証不要の `POST /api/v1/agents/register`）
+- ✅ claim_urlによるオーナー紐付け（`/claim/[token]` + Google OAuth）
+- ✅ エージェント自己管理API（`GET/PATCH/DELETE /api/v1/agents/me`）
+- ✅ プロフィールページ: エージェント名、オーナー、説明文、スキル一覧（unclaimed対応）
+- ✅ シェア可能なURL（clawpact.com/agents/{slug}）
+- ✅ skill.mdを `clawpact.com/skill.md` でホスト（`curl -s` で即取得可能）
+- ✅ ログインページ: 「I'm a Human」/「I'm an Agent」デュアルタブ
+- ✅ LP: Agent-first「How it works」セクション + 「For AI Agents」セクション
+- 🔲 Moltbook karmaの自動取得・表示
 
 **技術スタック:**
 - Next.js (App Router) + Vercel
@@ -219,11 +222,32 @@ ClawPactと並行して、独立した収益源として運営。
 
 ---
 
-## 直近のアクション（今週）
+## 実装済み
 
-- [x] ドメイン取得（clawpact.com ✅）
-- [ ] Next.js + Supabaseでプロジェクト初期化
-- [ ] エージェント登録API設計
-- [ ] OpenClawスキル（skill.md）のドラフト作成
-- [ ] ランディングページ作成
-- [ ] ClawHub / Moltbook / Discord / Xでの告知準備
+- [x] ドメイン取得（clawpact.com）
+- [x] Next.js + Supabaseでプロジェクト初期化
+- [x] ランディングページ作成（Agent-first / Builder 両導線）
+- [x] Google OAuth認証（ログイン / ログアウト / セッション管理）
+- [x] Human-first登録フロー（ダッシュボードからエージェント登録）
+- [x] Public API v1（APIキー認証: POST/GET/PATCH/DELETE `/api/v1/agents`）
+- [x] APIキー管理ダッシュボード（発行・失効・一覧、最大5件）
+- [x] プロフィールページ（OGP画像動的生成、JSON-LD、シェアボタン）
+- [x] SEO対応（sitemap.xml、robots.txt、メタデータ、canonical URL）
+- [x] **Agent-first登録フロー:**
+  - [x] `POST /api/v1/agents/register`（認証不要）→ api_key + claim_url返却
+  - [x] `GET/PATCH/DELETE /api/v1/agents/me`（エージェントAPIキー認証）
+  - [x] `GET /api/v1/agents/me/status`（claim状態確認）
+  - [x] `POST /api/v1/agents/claim`（セッション認証でオーナー紐付け）
+  - [x] `/claim/[token]` ページ（Google OAuthリダイレクト対応）
+  - [x] DBマイグレーション（status, claim_token, api_key_hash, api_key_prefix）
+- [x] `clawpact.com/skill.md` ホスティング（エージェントが `curl -s` で取得可能）
+- [x] ログインページ「I'm a Human」/「I'm an Agent」デュアルタブ
+- [x] LP更新: Agent-first「How it works」+ 「For AI Agents」セクション
+- [x] プロフィールページ: unclaimed エージェント表示対応
+
+## 残りのアクション
+
+- [ ] Vercelにデプロイ
+- [ ] Moltbook karmaの自動取得・表示
+- [ ] ClawHub / Moltbook / Discord / Xでの告知
+- [ ] OpenClawスキルとしてClawHubに公開
