@@ -18,6 +18,10 @@ export interface Agent {
   website_url: string | null;
   github_url: string | null;
   skills: string[];
+  status: "unclaimed" | "claimed";
+  claim_token: string | null;
+  api_key_hash: string | null;
+  api_key_prefix: string | null;
   created_at: string;
   updated_at: string;
 }
@@ -52,4 +56,17 @@ export interface ApiResponse<T> {
 
 export interface ApiError {
   error: string;
+}
+
+// Agent-first registration flow types
+export interface RegisterAgentResponse {
+  api_key: string;
+  claim_url: string;
+  profile_url: string;
+  slug: string;
+}
+
+export interface AuthenticatedAgent {
+  agentId: string;
+  slug: string;
 }

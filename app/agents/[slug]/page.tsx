@@ -32,15 +32,18 @@ async function getAgentWithOwners(
 
   if (!agent) return null;
 
+  // Strip sensitive fields from the response
+  const { api_key_hash, api_key_prefix, claim_token, ...safeAgent } = agent;
+
   const { data: owners } = await supabase
     .from("users")
     .select("id, name, avatar_url")
-    .in("id", agent.owner_ids);
+    .in("id", safeAgent.owner_ids);
 
   return {
-    ...agent,
+    ...safeAgent,
     owners: (owners ?? []) as Pick<User, "id" | "name" | "avatar_url">[],
-  };
+  } as AgentWithOwners;
 }
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
@@ -264,7 +267,7 @@ export default async function AgentProfilePage({ params }: Props) {
       <div className="mt-10 flex items-center gap-2 text-muted-foreground">
         <Shield className="size-3.5" />
         <span className="text-[10px] uppercase tracking-widest">
-          Verified on ClawPact
+          {agent.status === "claimed" ? "Verified on ClawPact" : "Unclaimed"}
         </span>
       </div>
     </main>

@@ -77,6 +77,7 @@ export async function POST(
       name,
       description,
       skills,
+      status: "claimed",
     })
     .select()
     .single();

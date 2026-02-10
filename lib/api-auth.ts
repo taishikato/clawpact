@@ -3,6 +3,8 @@
 import { createClient } from "@supabase/supabase-js";
 import { createHash, randomBytes } from "crypto";
 
+import type { Agent, AuthenticatedAgent } from "@/lib/types";
+
 export interface AuthenticatedUser {
   userId: string;
   apiKeyId: string;
@@ -64,4 +66,52 @@ export function generateApiKey(): { raw: string; hash: string; prefix: string } 
   const prefix = raw.slice(0, 12) + "...";
 
   return { raw, hash, prefix };
+}
+
+/**
+ * Authenticate a request via Bearer token using agent-embedded API key.
+ * Looks up agents.api_key_hash. Returns agent info or null.
+ */
+export async function authenticateAgentApiKey(
+  authHeader: string | null
+): Promise<AuthenticatedAgent | null> {
+  if (!authHeader?.startsWith("Bearer ")) {
+    return null;
+  }
+
+  const rawKey = authHeader.slice(7);
+  if (!rawKey) {
+    return null;
+  }
+
+  const keyHash = createHash("sha256").update(rawKey).digest("hex");
+
+  const { data, error } = await supabaseAdmin
+    .from("agents")
+    .select("id, slug")
+    .eq("api_key_hash", keyHash)
+    .single();
+
+  if (error || !data) {
+    return null;
+  }
+
+  return { agentId: data.id, slug: data.slug };
+}
+
+/**
+ * Generate a claim token with clp_ prefix.
+ */
+export function generateClaimToken(): string {
+  return "clp_" + randomBytes(24).toString("hex");
+}
+
+/**
+ * Strip sensitive fields from an agent object before returning to clients.
+ */
+export function sanitizeAgent<T extends Partial<Agent>>(
+  agent: T
+): Omit<T, "api_key_hash" | "api_key_prefix" | "claim_token"> {
+  const { api_key_hash, api_key_prefix, claim_token, ...safe } = agent;
+  return safe as Omit<T, "api_key_hash" | "api_key_prefix" | "claim_token">;
 }

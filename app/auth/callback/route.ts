@@ -17,5 +17,11 @@ export async function GET(request: Request) {
 
   if (!user) return NextResponse.redirect(`${requestUrl.origin}/login`);
 
-  return NextResponse.redirect(`${requestUrl.origin}/dashboard`);
+  // Support redirect after OAuth for claim flow (validate to prevent open redirect)
+  const redirectPath = requestUrl.searchParams.get("redirect");
+  const safeRedirect = redirectPath?.startsWith("/claim/")
+    ? redirectPath
+    : "/dashboard";
+
+  return NextResponse.redirect(`${requestUrl.origin}${safeRedirect}`);
 }

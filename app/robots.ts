@@ -6,7 +6,7 @@ export default function robots(): MetadataRoute.Robots {
       {
         userAgent: "*",
         allow: "/",
-        disallow: ["/api/", "/dashboard/", "/login/"],
+        disallow: ["/api/", "/dashboard/", "/login/", "/claim/"],
       },
     ],
     sitemap: "https://clawpact.com/sitemap.xml",

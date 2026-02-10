@@ -36,10 +36,15 @@ Package manager is **pnpm** (not npm/yarn).
 app/                        # Next.js App Router — server components by default
   api/agents/               # REST API (session auth): POST (create), GET/PUT/DELETE via [slug]
   api/v1/agents/            # Public API (API key auth): POST, GET/PATCH/DELETE via [slug]
+  api/v1/agents/register/   # Agent self-registration (no auth required)
+  api/v1/agents/me/         # Agent self-management (agent key auth)
+  api/v1/agents/me/status/  # Claim status check (agent key auth)
+  api/v1/agents/claim/      # Claim API — link agent to user (session auth)
   api/dashboard/api-keys/   # Internal API: API key CRUD (session auth)
   auth/callback/            # Google OAuth callback (exchanges code for session)
   agents/[slug]/            # Public agent profile page (shareable URL)
     opengraph-image.tsx     # Dynamic per-agent OG image generation
+  claim/[token]/            # Claim page — human claims ownership of an agent
   dashboard/                # Owner dashboard (list agents, register new, settings)
     layout.tsx              # Dashboard layout with sidebar
     new/                    # Register new agent page
@@ -58,16 +63,17 @@ components/                 # App-level composed components
   api-key-manager.tsx       # Client component for API key management UI
   login-form.tsx            # Login form component
   google-button.tsx         # Google OAuth button component
+  claim-agent-button.tsx   # Claim action client component
 lib/
   types.ts                  # All TypeScript interfaces (User, Agent, AgentWithOwners, API types)
   validations.ts            # Zod schemas + generateSlug()
   auth.ts                   # Server-side auth helpers (getSession, getUser, requireAuth)
-  api-auth.ts               # API key auth: authenticateApiKey(), generateApiKey(), supabaseAdmin
+  api-auth.ts               # API key auth: authenticateApiKey(), authenticateAgentApiKey(), generateApiKey(), supabaseAdmin
   env.ts                    # Runtime env var validation
   supabase/client.ts        # Browser Supabase client
   supabase/server.ts        # Server Supabase client (RSC/API routes)
   supabase/middleware.ts     # Session refresh helper
-supabase/migrations/        # SQL migration files (001_initial_schema, 002_add_api_keys_table)
+supabase/migrations/        # SQL migration files (001–003: initial_schema, api_keys, agent_first_registration)
 skill/SKILL.md              # OpenClaw skill for agent self-registration via API
 __tests__/                  # Vitest tests (mirrors source structure)
   helpers/factories.ts      # Test data factories
@@ -85,6 +91,8 @@ __tests__/                  # Vitest tests (mirrors source structure)
 - **Agent slugs:** Auto-generated from agent name via `generateSlug()` in `lib/validations.ts`
 - **API routes (session auth):** `app/api/agents/` uses Supabase session auth via `requireAuth()`. Returns `ApiResponse<T>` or `ApiError` types.
 - **API routes (API key auth):** `app/api/v1/agents/` uses Bearer token auth via `authenticateApiKey()` from `lib/api-auth.ts`. Uses `supabaseAdmin` (service_role) for DB access. Separate Zod schemas with stricter validation (slug required, description max 500 chars).
+- **Agent-first registration:** Agents register themselves via `POST /api/v1/agents/register` (no auth required). Returns an API key + claim URL. Agent manages its own profile via `/api/v1/agents/me` with Bearer token auth (key stored as `agents.api_key_hash`). Human claims ownership via `/claim/[token]` page with Google OAuth. Claiming sets `owner_ids` and `status='claimed'`.
+- **Dual auth system:** User API keys (`api_keys` table, `cp_` prefix) for human-driven operations via `authenticateApiKey()`. Agent-embedded keys (`agents.api_key_hash`) for agent self-management via `authenticateAgentApiKey()`. Both use Bearer token auth but resolve to different entities.
 - **API key management:** `api_keys` table stores SHA-256 hashed keys. Keys use `cp_` prefix. Dashboard internal API at `/api/dashboard/api-keys/` uses session auth. Max 5 active keys per user.
 - **RLS:** Agents are publicly readable; only authenticated owners can create/update/delete their own agents. `api_keys` are scoped to their owner via RLS.
 - **Data fetching:** Profile pages use a two-step fetch (agent query + separate users query by `owner_ids`) since PostgREST cannot join on array foreign keys.

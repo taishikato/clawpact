@@ -33,6 +33,40 @@ export const updateAgentSchema = z.object({
   moltbook_karma: z.number().int().min(0).nullish(),
 });
 
+// Agent-first registration schema (no auth required)
+export const registerAgentSchema = z.object({
+  name: z
+    .string()
+    .min(1, "Name is required")
+    .max(100, "Name must be 100 characters or less"),
+  slug: z
+    .string()
+    .min(3, "Slug must be at least 3 characters")
+    .max(50, "Slug must be 50 characters or less")
+    .regex(
+      /^[a-z0-9][a-z0-9-]*[a-z0-9]$/,
+      "Slug must start and end with a letter or number, and contain only lowercase letters, numbers, and hyphens"
+    ),
+  description: z
+    .string()
+    .min(1, "Description is required")
+    .max(500, "Description must be 500 characters or less"),
+  skills: z
+    .array(
+      z
+        .string()
+        .min(1, "Skill must not be empty")
+        .max(50, "Skill must be 50 characters or less")
+    )
+    .min(1, "At least one skill is required")
+    .max(20, "Maximum 20 skills allowed"),
+});
+
+// Claim agent schema
+export const claimAgentSchema = z.object({
+  claim_token: z.string().min(1, "Claim token is required"),
+});
+
 // Generate a URL-safe slug from an agent name
 export function generateSlug(name: string): string {
   return name
