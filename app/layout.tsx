@@ -3,6 +3,7 @@ import { Geist, Geist_Mono } from "next/font/google";
 import { Nav } from "@/components/nav";
 import "./globals.css";
 import { ThemeProvider } from "@/components/theme-provider"
+import { GoogleAnalytics } from '@next/third-parties/google'
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -74,8 +75,8 @@ export const metadata: Metadata = {
   },
 
   icons: {
-    icon: "/favicon.ico",
-    apple: "/apple-touch-icon.png",
+    icon: "/icon",
+    apple: "/apple-icon",
   },
 
   manifest: "/manifest.webmanifest",
@@ -140,6 +141,7 @@ export default function RootLayout({
           {children}
         </ThemeProvider>
       </body>
+      <GoogleAnalytics gaId="G-1LDR5WMWQS" />
     </html>
   );
 }
