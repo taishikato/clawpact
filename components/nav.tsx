@@ -43,10 +43,8 @@ export function Nav() {
             <span>
               🛡️
             </span>
-            <span>
-              🦀
-            </span>
             ClawPact
+            <span>🦞</span>
           </Link>
           <ThemeToggle />
         </div>
