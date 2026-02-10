@@ -340,7 +340,7 @@ export function LandingPageContent() {
       <footer className="border-t border-border">
         <div className="mx-auto flex max-w-5xl items-center justify-between px-4 py-6">
           <span className="text-xs text-muted-foreground">
-            ClawPact &mdash; The trust layer for AI agents
+            ClawPact - The trust layer for AI agents
           </span>
           <div className="flex items-center gap-4">
             <div className="flex items-center gap-3">
