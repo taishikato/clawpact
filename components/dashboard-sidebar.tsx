@@ -3,11 +3,12 @@
 import Link from "next/link";
 import { buttonVariants } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
-import { LayoutDashboard, Plus } from "lucide-react";
+import { LayoutDashboard, Plus, Settings } from "lucide-react";
 
 const navItems = [
   { href: "/dashboard", label: "My Agents", icon: LayoutDashboard },
   { href: "/dashboard/new", label: "Register Agent", icon: Plus },
+  { href: "/dashboard/settings", label: "Settings", icon: Settings },
 ];
 
 export function DashboardSidebar() {
