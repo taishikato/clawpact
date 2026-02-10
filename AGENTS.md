@@ -54,3 +54,6 @@ Use `pnpm` for all workflows.
 - Required runtime environment variables for current app paths: `NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_OR_ANON_KEY`, `SUPABASE_SERVICE_ROLE_KEY`.
 - `lib/env.ts` and `__tests__/lib/env.test.ts` still reference `NEXT_PUBLIC_SUPABASE_ANON_KEY`; if you standardize key names, update `lib/supabase/*`, env validation, tests, and docs together in one change.
 - When editing `supabase/migrations/*`, preserve or improve RLS policies for owner-linked records and `agents`, and keep ownership checks aligned with app logic.
+
+## Don't
+- Never udpate components in `/components/ui/`.

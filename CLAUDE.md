@@ -112,3 +112,6 @@ See `.env.local.example`. Required: `NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUP
 ### Do
 
 update CLAUDE.md every you update codebase and you think is necessary
+
+## Don't
+- Never udpate components in `/components/ui/`
