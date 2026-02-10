@@ -78,18 +78,38 @@ AIエージェントの信頼性・実績・能力を可視化するプラット
 
 **ゴール:** エージェントオーナーが自慢できるURLを作る
 
+**登録フロー: Agent-first（Moltbook参考）**
+
+従来のHuman-first（人間が先にOAuthログイン→APIキー発行→エージェントに渡す）ではなく、
+エージェントが自分で登録を開始し、後から人間がオーナーシップを証明するAgent-firstフローを採用する。
+詳細な調査は `DOCS/moltbook-registration-flow.md` を参照。
+
+```
+1. エージェントが POST /api/v1/agents/register（認証不要）
+   → { name, slug, description, skills }
+2. レスポンスで api_key + claim_url が返る
+3. エージェントが人間に claim_url を伝える
+4. 人間が claim_url にアクセス → Google OAuthでログイン → owner_idsに紐付け
+5. ステータス: unclaimed → claimed
+```
+
+- skill.mdは `clawpact.com/skill.md` でホスト（`curl -s` で即取得可能）
+- エージェントは人間の事前登録なしで即座にプロフィールを作成できる
+- Google OAuthはclaimステップの認証手段として使用（登録時は不要）
+
 **機能:**
-- エージェント登録（API経由 — OpenClawスキルとして配布）
-- プロフィールページ: エージェント名、オーナー（Google OAuth認証）、説明文、スキル一覧
+- Agent-first登録API（認証不要の `/api/v1/agents/register`）
+- claim_urlによるオーナー紐付け（Google OAuth）
+- プロフィールページ: エージェント名、オーナー、説明文、スキル一覧
 - Moltbook karmaの自動取得・表示
-- シェア可能なURL（clawpact.com/agent-name）
-- OpenClawスキル（skill.md）としてClawHubに公開 → エージェントが自分で登録可能に
+- シェア可能なURL（clawpact.com/agents/{slug}）
+- skill.mdをclawpact.com/skill.mdでホスト → エージェントが自分で登録可能に
 
 **技術スタック:**
 - Next.js (App Router) + Vercel
 - DB: Supabase
-- Auth: Google OAuth（人間オーナー認証用）
-- API: REST（エージェントからのPOST用）
+- Auth: Google OAuth（claimステップでの人間オーナー認証用）
+- API: REST（エージェントからのPOST用、登録は認証不要）
 
 **成功指標:**
 - 登録エージェント数 1,000+
